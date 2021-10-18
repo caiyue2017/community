@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：指明对应mapper的路径 -->
+<mapper namespace="com.whynotyue.community.dao.UserMapper">
+    <!-- 声明一个 sql 语句，用 <include> 引入 -->
+    <sql id="insertFields">
+        username, password, salt, email, type, status, activation_code, header_url, create_time
+    </sql>
+
+    <sql id="selectFields">
+        id, username, password, salt, email, type, status, activation_code, header_url, create_time
+    </sql>
+
+    <select id="selectById" resultType="User">
+        select
+        <include refid="selectFields"/>
+        from user
+        where id = #{id}
+    </select>
+
+    <!-- resultType：可返回基本数据类型及其包装类、实体类、List集合（注明元素类型即可）、-->
+    <!-- resultType 写实体类名，而非全限定名，因 mybatis.type-aliases-package 已配置好包路径 -->
+    <select id="selectByName" resultType="User">
+        select
+        <include refid="selectFields"/>
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="selectByEmail" resultType="User">
+        select
+        <include refid="selectFields"/>
+        from user
+        where email = #{email}
+    </select>
+
+    <!-- 传入的参数为引用类型，用 parameterType 注明路径，同理写实体类名即可 -->
+    <!-- keyProperty 声明数据库自增ID对应传入对象（user）哪个属性（id），并将其赋予，插入后用user.getId可得id值-->
+    <insert id="insertUser" parameterType="User" keyProperty="id">
+        insert into user (<include refid="insertFields"/>)
+        values(#{username}, #{password}, #{salt}, #{email}, #{type}, #{status}, #{activationCode}, #{headerUrl},
+        #{createTime})
+    </insert>
+
+    <update id="updateStatus">
+        update user set status = #{status} where id = #{id}
+    </update>
+
+    <update id="updateHeader">
+        update user set header_url = #{headerUrl} where id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        update user set password = #{password} where id = #{id}
+    </update>
+
+</mapper>
